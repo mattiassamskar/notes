@@ -6,20 +6,15 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
-
 import "./App.css";
 import { CardTitle } from "./CardTitle";
 import { CardText } from "./CardText";
-
-interface Note {
-  title: string;
-  text: string;
-  column: number;
-}
+import { guid } from "./utils";
+import { NoteData } from "./types";
 
 function App() {
   const [columns] = useState([1, 2]);
-  const [notes, setNotes] = useState([] as Note[]);
+  const [notes, setNotes] = useState([] as NoteData[]);
 
   return (
     <Container fluid>
@@ -29,15 +24,14 @@ function App() {
             {notes
               .filter((note) => note.column === column)
               .map((note) => (
-                <Note
-                  key={note.title + note.column}
-                  title={note.title}
-                  text={note.text}
-                ></Note>
+                <Note key={note.id} title={note.title} text={note.text}></Note>
               ))}
             <AddButton
               onClick={() =>
-                setNotes([...notes, { title: "", text: "", column }])
+                setNotes([
+                  ...notes,
+                  { id: guid(), title: "", text: "", column },
+                ])
               }
             />
           </Col>
