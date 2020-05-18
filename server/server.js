@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const compression = require("compression");
+const db = require("./db");
 
 const app = express();
 app.use(compression());
@@ -20,6 +21,7 @@ app.get("/ping", async (req, res) => {
 });
 
 try {
+  db.connectToMongoDb();
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => console.log(`Running on port ${PORT}`));
 } catch (error) {
