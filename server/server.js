@@ -11,11 +11,32 @@ app.use(bodyParser.json());
 
 app.use(express.static(path.join(__dirname, `/../build`)));
 
-app.get("/ping", async (req, res) => {
+app.get("/notes", async (req, res) => {
   try {
-    res.send({ response: "pong" });
+    const notes = await db.getNotes();
+    res.send({ notes });
   } catch (error) {
     console.error("server/ping: Error:", error);
+    res.sendStatus(500);
+  }
+});
+
+app.post("/notes", async (req, res) => {
+  try {
+    if (!req.body) {
+      console.error("server/notes: No body");
+      return res.sendStatus(400);
+    }
+
+    await db.saveNote({
+      id: req.body.id,
+      title: req.body.title,
+      text: req.body.text,
+      column: req.body.column,
+    });
+    res.send();
+  } catch (error) {
+    console.error("server/notes: Error:", error);
     res.sendStatus(500);
   }
 });
