@@ -25,7 +25,8 @@
     "react-icons": "^3.10.0",
     "react-markdown": "^4.3.1",
     "react-scripts": "3.4.1",
-    "typescript": "~3.7.2"
+    "typescript": "~3.7.2",
+    "connect-wwwhisper": "*"
   },
   "scripts": {
     "start": "node server/server.js",
