@@ -1,17 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
 
 export const CardText = ({
   text,
+  setText,
   isEditing,
+  onBlur,
 }: {
   text: string;
+  setText: (text: string) => void;
   isEditing: boolean;
+  onBlur: () => void;
 }) => {
-  const [editedText, setEditedText] = useState(text);
   const textAreaRef = useRef<HTMLTextAreaElement>();
 
   useEffect(() => {
@@ -32,13 +34,14 @@ export const CardText = ({
               as="textarea"
               ref={(ref: HTMLTextAreaElement) => (textAreaRef.current = ref)}
               rows={20}
-              value={editedText}
-              onChange={(event) => setEditedText(event.target.value)}
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              onBlur={onBlur}
             />
           </Form.Group>
         </Form>
       ) : (
-        <ReactMarkdown source={editedText} />
+        <ReactMarkdown source={text} />
       )}
     </Card.Body>
   );

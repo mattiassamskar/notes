@@ -14,9 +14,9 @@ app.use(express.static(path.join(__dirname, `/../build`)));
 app.get("/notes", async (req, res) => {
   try {
     const notes = await db.getNotes();
-    res.send({ notes });
+    res.send(notes);
   } catch (error) {
-    console.error("server/ping: Error:", error);
+    console.error("server/notes: Error:", error);
     res.sendStatus(500);
   }
 });
@@ -34,6 +34,20 @@ app.post("/notes", async (req, res) => {
       text: req.body.text,
       column: req.body.column,
     });
+    res.send();
+  } catch (error) {
+    console.error("server/notes: Error:", error);
+    res.sendStatus(500);
+  }
+});
+
+app.delete("/notes/:id", async (req, res) => {
+  try {
+    if (!req.params.id) {
+      console.error("server/notes: No id");
+      return res.sendStatus(400);
+    }
+    await db.removeNote(req.params.id);
     res.send();
   } catch (error) {
     console.error("server/notes: Error:", error);

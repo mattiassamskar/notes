@@ -1,12 +1,12 @@
 import { NoteData } from "./types";
 
-export const getNotes = async (): Promise<NoteData[]> => {
+export const fetchNotes = async (): Promise<NoteData[]> => {
   const respone = await fetch("notes");
   return await respone.json();
 };
 
-export const saveNote = async ({ id, title, text, column }: NoteData) => {
-  const response = await fetch("notes", {
+export const saveNote = async ({ id, title, text, column }: NoteData) =>
+  await fetch("notes", {
     method: "POST",
     headers: {
       accept: "application/json",
@@ -14,5 +14,6 @@ export const saveNote = async ({ id, title, text, column }: NoteData) => {
     },
     body: JSON.stringify({ id, title, text, column }),
   });
-  return await response.json();
-};
+
+export const removeNote = async ({ id }: { id: string }) =>
+  await fetch("notes/" + id, { method: "DELETE" });

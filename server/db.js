@@ -11,6 +11,10 @@ exports.getNotes = async () => {
   return await db.collection("notes").find().toArray();
 };
 
+exports.removeNote = async (id) => {
+  return await db.collection("notes").deleteOne({ id });
+};
+
 exports.getNote = async (id) => await db.collection("notes").findOne({ id });
 
 exports.saveNote = async ({ id, title, text, column }) => {
