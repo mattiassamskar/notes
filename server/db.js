@@ -17,16 +17,30 @@ exports.removeNote = async (id) => {
 
 exports.getNote = async (id) => await db.collection("notes").findOne({ id });
 
-exports.saveNote = async ({ id, title, text, column }) => {
-  const note = await this.getNote(id);
-  if (note) {
-    return await updateNote({ id, title, text, column });
-  }
-  await db.collection("notes").insertOne({ id, title, text, column });
+exports.switchNoteOrder = async (id1, id2) => {
+  const note1 = await this.getNote(id1);
+  const note2 = await this.getNote(id2);
+
+  if (!note1 || !note2) return;
+
+  const index = note1.index;
+  note1.index = note2.index;
+  note2.index = index;
+
+  await updateNote(note1);
+  await updateNote(note2);
 };
 
-const updateNote = async ({ id, title, text, column }) => {
+exports.saveNote = async ({ id, title, text, column, index }) => {
+  const note = await this.getNote(id);
+  if (note) {
+    return await updateNote({ id, title, text, column, index });
+  }
+  await db.collection("notes").insertOne({ id, title, text, column, index });
+};
+
+const updateNote = async ({ id, title, text, column, index }) => {
   await db
     .collection("notes")
-    .findOneAndUpdate({ id }, { $set: { title, text, column } });
+    .findOneAndUpdate({ id }, { $set: { title, text, column, index } });
 };

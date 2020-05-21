@@ -33,6 +33,7 @@
     "dev": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:watch": "react-scripts test --watch",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

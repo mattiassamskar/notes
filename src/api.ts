@@ -5,15 +5,21 @@ export const fetchNotes = async (): Promise<NoteData[]> => {
   return await respone.json();
 };
 
-export const saveNote = async ({ id, title, text, column }: NoteData) =>
+export const saveNote = async ({ id, title, text, column, index }: NoteData) =>
   await fetch("notes", {
     method: "POST",
     headers: {
       accept: "application/json",
       "content-type": "application/json",
     },
-    body: JSON.stringify({ id, title, text, column }),
+    body: JSON.stringify({ id, title, text, column, index }),
   });
 
 export const removeNote = async ({ id }: { id: string }) =>
   await fetch("notes/" + id, { method: "DELETE" });
+
+export const switchNoteOrder = async (id1: string, id2: string) =>
+  await fetch("notes/switch", {
+    method: "POST",
+    body: JSON.stringify({ id1, id2 }),
+  });

@@ -9,10 +9,12 @@ export const Note = ({
   note,
   save,
   remove,
+  moveUp,
 }: {
   note: NoteData;
   save: (note: NoteData) => void;
   remove: (id: string) => void;
+  moveUp: (index: number) => void;
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(note.title);
@@ -22,6 +24,7 @@ export const Note = ({
     <NoteHeader
       enableTextEdit={() => setIsEditing(true)}
       removeNote={() => remove(note.id)}
+      moveUp={() => moveUp(note.index)}
     />
   );
 
@@ -37,6 +40,7 @@ export const Note = ({
             title,
             text,
             column: note.column,
+            index: note.index,
           });
         }}
       />
@@ -51,6 +55,7 @@ export const Note = ({
             title,
             text,
             column: note.column,
+            index: note.index,
           });
         }}
       />

@@ -36,7 +36,22 @@ app.post("/notes", async (req, res) => {
       title: req.body.title,
       text: req.body.text,
       column: req.body.column,
+      index: req.body.index,
     });
+    res.send();
+  } catch (error) {
+    console.error("server/notes: Error:", error);
+    res.sendStatus(500);
+  }
+});
+
+app.post("/notes/switch", async (req, res) => {
+  try {
+    if (!req.body || !req.body.id1 || !req.body.id2) {
+      console.error("server/notes: No body");
+      return res.sendStatus(400);
+    }
+    await db.switchNoteOrder(req.body.id1, req.body.id2);
     res.send();
   } catch (error) {
     console.error("server/notes: Error:", error);

@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrash, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
 export const NoteHeader = ({
   enableTextEdit,
   removeNote,
+  moveUp,
 }: {
   enableTextEdit: () => void;
   removeNote: () => void;
+  moveUp: () => void;
 }) => {
   const [showModal, setShowModal] = useState(false);
 
@@ -31,6 +33,15 @@ export const NoteHeader = ({
         onClick={(event) => {
           event.stopPropagation();
           enableTextEdit();
+        }}
+      />
+      <FontAwesomeIcon
+        className="float-right fading mr-2"
+        cursor="pointer"
+        icon={faArrowUp}
+        onClick={(event) => {
+          event.stopPropagation();
+          moveUp();
         }}
       />
       <Modal show={showModal} animation={false} centered={true}>

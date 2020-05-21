@@ -9,7 +9,8 @@ import "./App.css";
 import { guid } from "./utils";
 import { NoteData } from "./types";
 import { Note } from "./Note";
-import { fetchNotes, saveNote, removeNote } from "./api";
+import { fetchNotes, saveNote, removeNote, switchNoteOrder } from "./api";
+import { getPreviousNote, getNotesForColumn, getNextIndex } from "./App.utils";
 
 function App() {
   const [columns] = useState([1, 2]);
@@ -31,21 +32,28 @@ function App() {
     await getNotes();
   };
 
+  const moveUp = async (note: NoteData) => {
+    const previousNote = getPreviousNote(notes, note);
+    if (!previousNote) return;
+
+    await switchNoteOrder(note.id, previousNote.id);
+    await getNotes();
+  };
+
   return (
     <Container fluid>
       <Row>
         {columns.map((column) => (
           <Col key={column}>
-            {notes
-              .filter((note) => note.column === column)
-              .map((note) => (
-                <Note
-                  key={note.id}
-                  note={note}
-                  save={save}
-                  remove={remove}
-                ></Note>
-              ))}
+            {getNotesForColumn(notes, column).map((note) => (
+              <Note
+                key={note.id}
+                note={note}
+                save={save}
+                remove={remove}
+                moveUp={() => moveUp(note)}
+              />
+            ))}
             <div className="mt-4 mb-4 fading">
               <FontAwesomeIcon
                 style={{ alignSelf: "center", width: "100%" }}
@@ -55,7 +63,13 @@ function App() {
                 onClick={() =>
                   setNotes([
                     ...notes,
-                    { id: guid(), title: "", text: "", column },
+                    {
+                      id: guid(),
+                      title: "",
+                      text: "",
+                      column,
+                      index: getNextIndex(notes, column),
+                    },
                   ])
                 }
               />
