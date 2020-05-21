@@ -13,7 +13,7 @@ export const getPreviousNote = (notes: NoteData[], note: NoteData) => {
 
 export const getNotesForColumn = (notes: NoteData[], column: number) => {
   const filteredNotes = notes.filter((note) => note.column === column);
-  filteredNotes.sort((note) => note.index);
+  filteredNotes.sort((a, b) => a.index - b.index);
   return filteredNotes;
 };
 

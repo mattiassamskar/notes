@@ -21,5 +21,9 @@ export const removeNote = async ({ id }: { id: string }) =>
 export const switchNoteOrder = async (id1: string, id2: string) =>
   await fetch("notes/switch", {
     method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+    },
     body: JSON.stringify({ id1, id2 }),
   });

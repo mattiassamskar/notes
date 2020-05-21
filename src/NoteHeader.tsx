@@ -26,15 +26,7 @@ export const NoteHeader = ({
           setShowModal(true);
         }}
       />
-      <FontAwesomeIcon
-        className="float-right fading mr-2"
-        cursor="pointer"
-        icon={faEdit}
-        onClick={(event) => {
-          event.stopPropagation();
-          enableTextEdit();
-        }}
-      />
+
       <FontAwesomeIcon
         className="float-right fading mr-2"
         cursor="pointer"
@@ -42,6 +34,15 @@ export const NoteHeader = ({
         onClick={(event) => {
           event.stopPropagation();
           moveUp();
+        }}
+      />
+      <FontAwesomeIcon
+        className="float-right fading mr-2"
+        cursor="pointer"
+        icon={faEdit}
+        onClick={(event) => {
+          event.stopPropagation();
+          enableTextEdit();
         }}
       />
       <Modal show={showModal} animation={false} centered={true}>
