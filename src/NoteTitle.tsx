@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 
-export const CardTitle = ({
+export const NoteTitle = ({
   title,
   setTitle,
   header,

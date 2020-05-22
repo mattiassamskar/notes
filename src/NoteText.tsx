@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
 
-export const CardText = ({
+export const NoteText = ({
   text,
   setText,
   isEditing,

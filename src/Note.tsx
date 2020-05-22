@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Card from "react-bootstrap/Card";
-import { CardTitle } from "./CardTitle";
-import { CardText } from "./CardText";
+import { NoteTitle } from "./NoteTitle";
+import { NoteText } from "./NoteText";
 import { NoteData } from "./types";
 import { NoteHeader } from "./NoteHeader";
 
@@ -36,7 +36,7 @@ export const Note = ({
 
   return (
     <Card className="mt-4 ml-2 mr-4">
-      <CardTitle
+      <NoteTitle
         title={title}
         setTitle={setTitle}
         header={header}
@@ -50,7 +50,7 @@ export const Note = ({
           });
         }}
       />
-      <CardText
+      <NoteText
         text={text}
         setText={setText}
         isEditing={isEditing}
