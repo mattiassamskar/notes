@@ -27,3 +27,17 @@ export const switchNoteOrder = async (id1: string, id2: string) =>
     },
     body: JSON.stringify({ id1, id2 }),
   });
+
+export const updateNotePosition = async (
+  note: NoteData,
+  column: number,
+  index: number
+) => {
+  await saveNote({
+    id: note.id,
+    title: note.title,
+    text: note.text,
+    column,
+    index,
+  });
+};

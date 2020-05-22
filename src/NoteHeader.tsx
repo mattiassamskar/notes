@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEdit,
+  faTrash,
+  faArrowUp,
+  faArrowRight,
+  faArrowLeft,
+} from "@fortawesome/free-solid-svg-icons";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
@@ -8,10 +14,14 @@ export const NoteHeader = ({
   enableTextEdit,
   removeNote,
   moveUp,
+  moveRight,
+  moveLeft,
 }: {
   enableTextEdit: () => void;
   removeNote: () => void;
   moveUp: () => void;
+  moveRight: () => void;
+  moveLeft: () => void;
 }) => {
   const [showModal, setShowModal] = useState(false);
 
@@ -26,7 +36,6 @@ export const NoteHeader = ({
           setShowModal(true);
         }}
       />
-
       <FontAwesomeIcon
         className="float-right fading mr-2"
         cursor="pointer"
@@ -34,6 +43,24 @@ export const NoteHeader = ({
         onClick={(event) => {
           event.stopPropagation();
           moveUp();
+        }}
+      />
+      <FontAwesomeIcon
+        className="float-right fading mr-2"
+        cursor="pointer"
+        icon={faArrowRight}
+        onClick={(event) => {
+          event.stopPropagation();
+          moveRight();
+        }}
+      />
+      <FontAwesomeIcon
+        className="float-right fading mr-2"
+        cursor="pointer"
+        icon={faArrowLeft}
+        onClick={(event) => {
+          event.stopPropagation();
+          moveLeft();
         }}
       />
       <FontAwesomeIcon

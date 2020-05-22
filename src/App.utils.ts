@@ -21,3 +21,8 @@ export const getNextIndex = (notes: NoteData[], column: number) => {
   const indexes = getNotesForColumn(notes, column).map((note) => note.index);
   return Math.max(...indexes) + 1;
 };
+
+export const getNextColumn = (note: NoteData) => (note.column === 1 ? 2 : null);
+
+export const getPreviousColumn = (note: NoteData) =>
+  note.column === 2 ? 1 : null;

@@ -9,8 +9,20 @@ import "./App.css";
 import { guid } from "./utils";
 import { NoteData } from "./types";
 import { Note } from "./Note";
-import { fetchNotes, saveNote, removeNote, switchNoteOrder } from "./api";
-import { getPreviousNote, getNotesForColumn, getNextIndex } from "./App.utils";
+import {
+  fetchNotes,
+  saveNote,
+  removeNote,
+  switchNoteOrder,
+  updateNotePosition,
+} from "./api";
+import {
+  getPreviousNote,
+  getNotesForColumn,
+  getNextIndex,
+  getNextColumn,
+  getPreviousColumn,
+} from "./App.utils";
 
 function App() {
   const [columns] = useState([1, 2]);
@@ -40,6 +52,24 @@ function App() {
     await getNotes();
   };
 
+  const moveRight = async (note: NoteData) => {
+    const column = getNextColumn(note);
+    if (!column) return;
+
+    const index = getNextIndex(notes, column);
+    await updateNotePosition(note, column, index);
+    await getNotes();
+  };
+
+  const moveLeft = async (note: NoteData) => {
+    const column = getPreviousColumn(note);
+    if (!column) return;
+
+    const index = getNextIndex(notes, column);
+    await updateNotePosition(note, column, index);
+    await getNotes();
+  };
+
   return (
     <Container fluid>
       <Row>
@@ -52,6 +82,8 @@ function App() {
                 save={save}
                 remove={remove}
                 moveUp={() => moveUp(note)}
+                moveRight={() => moveRight(note)}
+                moveLeft={() => moveLeft(note)}
               />
             ))}
             <div className="mt-4 mb-4 fading">
