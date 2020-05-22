@@ -31,16 +31,42 @@ exports.switchNoteOrder = async (id1, id2) => {
   await updateNote(note2);
 };
 
-exports.saveNote = async ({ id, title, text, column, index }) => {
+exports.saveNote = async ({ id, title, text, tabId, column, index }) => {
   const note = await this.getNote(id);
   if (note) {
-    return await updateNote({ id, title, text, column, index });
+    return await updateNote({ id, title, text, tabId, column, index });
   }
-  await db.collection("notes").insertOne({ id, title, text, column, index });
-};
-
-const updateNote = async ({ id, title, text, column, index }) => {
   await db
     .collection("notes")
-    .findOneAndUpdate({ id }, { $set: { title, text, column, index } });
+    .insertOne({ id, title, text, tabId, column, index });
+};
+
+const updateNote = async ({ id, title, text, tabId, column, index }) => {
+  await db
+    .collection("notes")
+    .findOneAndUpdate({ id }, { $set: { title, text, tabId, column, index } });
+};
+
+exports.getTabs = async () => {
+  return await db.collection("tabs").find().toArray();
+};
+
+exports.removeTab = async (id) => {
+  return await db.collection("tabs").deleteOne({ id });
+};
+
+exports.getTab = async (id) => await db.collection("tabs").findOne({ id });
+
+exports.saveTab = async ({ id, title, index }) => {
+  const tab = await this.getTab(id);
+  if (tab) {
+    return await updateTab({ id, title, index });
+  }
+  await db.collection("tabs").insertOne({ id, title, index });
+};
+
+const updateTab = async ({ id, title, index }) => {
+  await db
+    .collection("tabs")
+    .findOneAndUpdate({ id }, { $set: { title, index } });
 };

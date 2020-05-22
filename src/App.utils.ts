@@ -3,7 +3,7 @@ import { NoteData } from "./types";
 export const getPreviousNote = (notes: NoteData[], note: NoteData) => {
   if (notes.length < 2) return null;
 
-  const previousNote = getNotesForColumn(notes, note.column)
+  const previousNote = getNotesForColumn(notes, note.tabId, note.column)
     .filter((n) => n.index !== note.index)
     .reduce((prev, curr) =>
       curr.index > prev.index && curr.index < note.index ? curr : prev
@@ -11,14 +11,26 @@ export const getPreviousNote = (notes: NoteData[], note: NoteData) => {
   return previousNote.index < note.index ? previousNote : null;
 };
 
-export const getNotesForColumn = (notes: NoteData[], column: number) => {
-  const filteredNotes = notes.filter((note) => note.column === column);
+export const getNotesForColumn = (
+  notes: NoteData[],
+  tabId: string,
+  column: number
+) => {
+  const filteredNotes = notes.filter(
+    (note) => note.tabId === tabId && note.column === column
+  );
   filteredNotes.sort((a, b) => a.index - b.index);
   return filteredNotes;
 };
 
-export const getNextIndex = (notes: NoteData[], column: number) => {
-  const indexes = getNotesForColumn(notes, column).map((note) => note.index);
+export const getNextIndex = (
+  notes: NoteData[],
+  tabId: string,
+  column: number
+) => {
+  const indexes = getNotesForColumn(notes, tabId, column).map(
+    (note) => note.index
+  );
   return Math.max(...indexes) + 1;
 };
 

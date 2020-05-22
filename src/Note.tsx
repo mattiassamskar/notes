@@ -17,8 +17,8 @@ export const Note = ({
   save: (note: NoteData) => void;
   remove: (id: string) => void;
   moveUp: (index: number) => void;
-  moveRight: () => void;
-  moveLeft: () => void;
+  moveRight: (note: NoteData) => void;
+  moveLeft: (note: NoteData) => void;
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(note.title);
@@ -29,8 +29,8 @@ export const Note = ({
       enableTextEdit={() => setIsEditing(true)}
       removeNote={() => remove(note.id)}
       moveUp={() => moveUp(note.index)}
-      moveRight={moveRight}
-      moveLeft={moveLeft}
+      moveRight={() => moveRight({ ...note, title, text })}
+      moveLeft={() => moveLeft({ ...note, title, text })}
     />
   );
 
@@ -42,11 +42,9 @@ export const Note = ({
         header={header}
         onBlur={() => {
           save({
-            id: note.id,
+            ...note,
             title,
             text,
-            column: note.column,
-            index: note.index,
           });
         }}
       />
@@ -57,11 +55,9 @@ export const Note = ({
         onBlur={() => {
           setIsEditing(false);
           save({
-            id: note.id,
+            ...note,
             title,
             text,
-            column: note.column,
-            index: note.index,
           });
         }}
       />
