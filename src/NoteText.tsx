@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown from "react-markdown/with-html";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
 
@@ -41,7 +41,11 @@ export const NoteText = ({
           </Form.Group>
         </Form>
       ) : (
-        <ReactMarkdown source={text} />
+        <ReactMarkdown
+          source={text}
+          linkTarget={() => "_blank"}
+          escapeHtml={false}
+        />
       )}
     </Card.Body>
   );
