@@ -24,7 +24,10 @@ export const NoteTitle = ({
     <Card.Header>
       {isEditing ? (
         <Form
-          onSubmit={() => inputRef.current?.blur()}
+          onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
+            inputRef.current?.blur();
+            event.preventDefault();
+          }}
           onBlur={() => {
             setIsEditing(false);
             onBlur();
