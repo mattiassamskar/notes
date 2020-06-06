@@ -11,15 +11,7 @@ import Nav from "react-bootstrap/Nav";
 import { guid } from "./utils";
 import { NotesTab, NoteData } from "./types";
 import { Note } from "./Note";
-import {
-  fetchNotes,
-  saveNote,
-  removeNote,
-  switchNoteOrder,
-  updateNotePosition,
-  fetchTabs,
-  saveTab,
-} from "./api";
+import { api } from "./api";
 import {
   getPreviousNote,
   getNotesForColumn,
@@ -27,6 +19,7 @@ import {
   getNextColumn,
   getPreviousColumn,
 } from "./App.utils";
+import { TabNavItem } from "./TabNavItem";
 
 function App() {
   const [tabs, setTabs] = useState([] as NotesTab[]);
@@ -54,20 +47,30 @@ function App() {
   }, [activeTab]);
 
   const getNotes = async () => {
-    const dbNotes = await fetchNotes();
+    const dbNotes = await api.fetchNotes();
     setNotes(dbNotes);
   };
 
+  const saveNote = async (note: NoteData) => await api.saveNote(note);
+
+  const removeNote = async (id: string) => {
+    await api.removeNote({ id });
+    await getNotes();
+  };
+
   const getTabs = async () => {
-    const dbTabs = await fetchTabs();
+    const dbTabs = await api.fetchTabs();
     setTabs(dbTabs);
   };
 
-  const save = async (note: NoteData) => await saveNote(note);
+  const saveTab = async (tab: NotesTab) => {
+    await api.saveTab(tab);
+    await getTabs();
+  };
 
-  const remove = async (id: string) => {
-    await removeNote({ id });
-    await getNotes();
+  const removeTab = async (id: string) => {
+    await api.removeTab({ id });
+    await getTabs();
   };
 
   const addNote = (tabId: string, column: number) => {
@@ -88,7 +91,7 @@ function App() {
     const previousNote = getPreviousNote(notes, note);
     if (!previousNote) return;
 
-    await switchNoteOrder(note.id, previousNote.id);
+    await api.switchNoteOrder(note.id, previousNote.id);
     await getNotes();
   };
 
@@ -97,7 +100,7 @@ function App() {
     if (!column) return;
 
     const index = getNextIndex(notes, note.tabId, column);
-    await updateNotePosition(note, column, index);
+    await api.updateNotePosition(note, column, index);
     await getNotes();
   };
 
@@ -106,12 +109,12 @@ function App() {
     if (!column) return;
 
     const index = getNextIndex(notes, note.tabId, column);
-    await updateNotePosition(note, column, index);
+    await api.updateNotePosition(note, column, index);
     await getNotes();
   };
 
   const addTab = async () => {
-    await saveTab({
+    await api.saveTab({
       id: guid(),
       title: "New tab",
       index: tabs.length + 1,
@@ -130,9 +133,29 @@ function App() {
       >
         <Nav variant="tabs">
           {tabs.map((tab) => (
-            <NavItem key={tab.id} id={tab.id} title={tab.title} />
+            <TabNavItem
+              key={tab.id}
+              id={tab.id}
+              title={tab.title}
+              isActive={activeTab === tab.id}
+              saveTab={saveTab}
+              removeTab={removeTab}
+            />
           ))}
-          <NewTabNavItem onClick={addTab} />
+          <Nav.Item key={"999"}>
+            <Nav.Link eventKey={"999"}>
+              <div className="fading">
+                <span className="fading">
+                  <FontAwesomeIcon
+                    cursor="pointer"
+                    color={"black"}
+                    icon={faPlus}
+                    onClick={addTab}
+                  />
+                </span>
+              </div>
+            </Nav.Link>
+          </Nav.Item>
         </Nav>
         <Tab.Content>
           {tabs.map((tab) => (
@@ -144,21 +167,23 @@ function App() {
                       <Note
                         key={note.id}
                         note={note}
-                        save={save}
-                        remove={remove}
+                        save={saveNote}
+                        remove={removeNote}
                         moveUp={() => moveUp(note)}
                         moveRight={moveRight}
                         moveLeft={moveLeft}
                       />
                     ))}
                     <div className="mt-4 mb-4 fading">
-                      <FontAwesomeIcon
-                        style={{ alignSelf: "center", width: "100%" }}
-                        cursor="pointer"
-                        color={"black"}
-                        icon={faPlus}
-                        onClick={() => addNote(tab.id, column)}
-                      />
+                      <span className="fading">
+                        <FontAwesomeIcon
+                          style={{ alignSelf: "center", width: "100%" }}
+                          cursor="pointer"
+                          color={"black"}
+                          icon={faPlus}
+                          onClick={() => addNote(tab.id, column)}
+                        />
+                      </span>
                     </div>
                   </Col>
                 ))}
@@ -172,24 +197,3 @@ function App() {
 }
 
 export default App;
-
-const NavItem = ({ id, title }: { id: string; title: string }) => (
-  <Nav.Item key={id}>
-    <Nav.Link eventKey={id}>{title}</Nav.Link>
-  </Nav.Item>
-);
-
-const NewTabNavItem = ({ onClick }: { onClick: () => void }) => (
-  <Nav.Item key={"999"}>
-    <Nav.Link eventKey={"999"}>
-      <div className="fading">
-        <FontAwesomeIcon
-          cursor="pointer"
-          color={"black"}
-          icon={faPlus}
-          onClick={onClick}
-        />
-      </div>
-    </Nav.Link>
-  </Nav.Item>
-);

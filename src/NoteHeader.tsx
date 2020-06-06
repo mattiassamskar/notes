@@ -27,51 +27,48 @@ export const NoteHeader = ({
 
   return (
     <>
-      <FontAwesomeIcon
-        className="float-right fading"
-        cursor="pointer"
-        icon={faTrash}
-        onClick={(event) => {
-          event.stopPropagation();
-          setShowModal(true);
-        }}
-      />
-      <FontAwesomeIcon
-        className="float-right fading mr-2"
-        cursor="pointer"
-        icon={faArrowUp}
-        onClick={(event) => {
-          event.stopPropagation();
-          moveUp();
-        }}
-      />
-      <FontAwesomeIcon
-        className="float-right fading mr-2"
-        cursor="pointer"
-        icon={faArrowRight}
-        onClick={(event) => {
-          event.stopPropagation();
-          moveRight();
-        }}
-      />
-      <FontAwesomeIcon
-        className="float-right fading mr-2"
-        cursor="pointer"
-        icon={faArrowLeft}
-        onClick={(event) => {
-          event.stopPropagation();
-          moveLeft();
-        }}
-      />
-      <FontAwesomeIcon
-        className="float-right fading mr-2"
-        cursor="pointer"
-        icon={faEdit}
-        onClick={(event) => {
-          event.stopPropagation();
-          enableTextEdit();
-        }}
-      />
+      <span className="fading float-right" style={{ cursor: "pointer" }}>
+        <FontAwesomeIcon
+          className="float-right fading"
+          icon={faTrash}
+          onClick={(event) => {
+            event.stopPropagation();
+            setShowModal(true);
+          }}
+        />
+        <FontAwesomeIcon
+          className="float-right fading mr-2"
+          icon={faArrowUp}
+          onClick={(event) => {
+            event.stopPropagation();
+            moveUp();
+          }}
+        />
+        <FontAwesomeIcon
+          className="float-right fading mr-2"
+          icon={faArrowRight}
+          onClick={(event) => {
+            event.stopPropagation();
+            moveRight();
+          }}
+        />
+        <FontAwesomeIcon
+          className="float-right fading mr-2"
+          icon={faArrowLeft}
+          onClick={(event) => {
+            event.stopPropagation();
+            moveLeft();
+          }}
+        />
+        <FontAwesomeIcon
+          className="float-right fading mr-2"
+          icon={faEdit}
+          onClick={(event) => {
+            event.stopPropagation();
+            enableTextEdit();
+          }}
+        />
+      </span>
       <Modal show={showModal} animation={false} centered={true}>
         <Modal.Header closeButton>
           <Modal.Title>Remove note</Modal.Title>
