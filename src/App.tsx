@@ -136,6 +136,7 @@ function App() {
             <TabNavItem
               key={tab.id}
               id={tab.id}
+              index={tab.index}
               title={tab.title}
               isActive={activeTab === tab.id}
               saveTab={saveTab}

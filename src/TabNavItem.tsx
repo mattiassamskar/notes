@@ -9,23 +9,49 @@ import {
 import Nav from "react-bootstrap/Nav";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import { NotesTab } from "./types";
 
 export const TabNavItem: React.FunctionComponent<{
   id: string;
+  index: number;
   title: string;
   isActive: boolean;
   saveTab: (tab: NotesTab) => void;
   removeTab: (tabId: string) => void;
-}> = ({ id, title, isActive, saveTab, removeTab }) => {
+}> = ({ id, index, title, isActive, saveTab, removeTab }) => {
   const [showToolbar, setShowToolbar] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(title);
 
   return (
     <Nav.Item key={id} onBlur={() => setShowToolbar(false)}>
       <Nav.Link eventKey={id}>
-        {title}
-        {showToolbar && isActive && (
+        {isEditing ? (
+          <Form
+            onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
+              event.preventDefault();
+              saveTab({ id, index, title: editedTitle });
+              setIsEditing(false);
+            }}
+            onBlur={() => {
+              saveTab({ id, index, title: editedTitle });
+              setIsEditing(false);
+            }}
+          >
+            <Form.Group>
+              <Form.Control
+                as="input"
+                value={editedTitle}
+                onChange={(event) => setEditedTitle(event.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        ) : (
+          editedTitle
+        )}
+        {showToolbar && isActive && !isEditing && (
           <>
             <FontAwesomeIcon
               className="ml-2 fading"
@@ -33,6 +59,7 @@ export const TabNavItem: React.FunctionComponent<{
               icon={faEdit}
               onClick={(event) => {
                 event.stopPropagation();
+                setIsEditing(true);
               }}
             />
             <FontAwesomeIcon
@@ -55,7 +82,7 @@ export const TabNavItem: React.FunctionComponent<{
           </>
         )}
 
-        {!showToolbar && isActive && (
+        {!showToolbar && isActive && !isEditing && (
           <span className="fading">
             <FontAwesomeIcon
               className="ml-2 fading"
