@@ -8,6 +8,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Tab from "react-bootstrap/Tab";
 import Nav from "react-bootstrap/Nav";
+import Spinner from "react-bootstrap/Spinner";
 import { guid } from "./utils";
 import { NotesTab, NoteData } from "./types";
 import { Note } from "./Note";
@@ -27,6 +28,7 @@ function App() {
   const [activeTab, setActiveTab] = useState("");
   const [columns] = useState([1, 2]);
   const [notes, setNotes] = useState([] as NoteData[]);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
@@ -48,21 +50,31 @@ function App() {
   }, [activeTab]);
 
   const getNotes = async () => {
+    setIsSaving(true);
     const dbNotes = await api.fetchNotes();
     setNotes(dbNotes);
+    setIsSaving(false);
   };
 
-  const saveNote = async (note: NoteData) => await api.saveNote(note);
+  const saveNote = async (note: NoteData) => {
+    setIsSaving(true);
+    await api.saveNote(note);
+    setIsSaving(false);
+  };
 
   const removeNote = async (id: string) => {
+    setIsSaving(true);
     await api.removeNote({ id });
     await getNotes();
+    setIsSaving(false);
   };
 
   const getTabs = async () => {
+    setIsSaving(true);
     const dbTabs = await api.fetchTabs();
     dbTabs.sort((a, b) => a.index - b.index);
     setTabs(dbTabs);
+    setIsSaving(false);
   };
 
   const saveTab = async (tab: NotesTab) => {
@@ -71,8 +83,10 @@ function App() {
   };
 
   const removeTab = async (id: string) => {
+    setIsSaving(true);
     await api.removeTab({ id });
     await getTabs();
+    setIsSaving(false);
   };
 
   const addNote = (tabId: string, column: number) => {
@@ -98,38 +112,46 @@ function App() {
   };
 
   const moveRight = async (note: NoteData) => {
+    setIsSaving(true);
     const column = getNextColumn(note);
     if (!column) return;
 
     const index = getNextIndex(notes, note.tabId, column);
     await api.updateNotePosition(note, column, index);
     await getNotes();
+    setIsSaving(false);
   };
 
   const moveLeft = async (note: NoteData) => {
+    setIsSaving(true);
     const column = getPreviousColumn(note);
     if (!column) return;
 
     const index = getNextIndex(notes, note.tabId, column);
     await api.updateNotePosition(note, column, index);
     await getNotes();
+    setIsSaving(false);
   };
 
   const addTab = async () => {
+    setIsSaving(true);
     await api.saveTab({
       id: guid(),
       title: "New tab",
       index: tabs.length + 1,
     });
     await getTabs();
+    setIsSaving(false);
   };
 
   const moveTabLeft = async (tab: NotesTab) => {
+    setIsSaving(true);
     const previousTab = getPreviousTab(tabs, tab);
     if (!previousTab) return;
 
     await api.switchTabOrder(tab.id, previousTab.id);
     await getTabs();
+    setIsSaving(false);
   };
 
   if (tabs.length === 0) return <div>Loading..</div>;
@@ -141,6 +163,14 @@ function App() {
         activeKey={activeTab}
         onSelect={(tabId: string) => setActiveTab(tabId)}
       >
+        {isSaving && (
+          <Spinner
+            animation="border"
+            variant="secondary"
+            size="sm"
+            className="float-right mt-2"
+          />
+        )}
         <Nav variant="tabs">
           {tabs.map((tab) => (
             <TabNavItem
