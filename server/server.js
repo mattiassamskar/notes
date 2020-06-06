@@ -55,7 +55,7 @@ app.post("/notes/switch", async (req, res) => {
     await db.switchNoteOrder(req.body.id1, req.body.id2);
     res.send();
   } catch (error) {
-    console.error("server/notes: Error:", error);
+    console.error("server/notes/switch: Error:", error);
     res.sendStatus(500);
   }
 });
@@ -121,6 +121,20 @@ app.delete("/tabs/:id", async (req, res) => {
     res.send();
   } catch (error) {
     console.error("server/tabs: Error:", error);
+    res.sendStatus(500);
+  }
+});
+
+app.post("/tabs/switch", async (req, res) => {
+  try {
+    if (!req.body || !req.body.id1 || !req.body.id2) {
+      console.error("server/notes: No body");
+      return res.sendStatus(400);
+    }
+    await db.switchTabOrder(req.body.id1, req.body.id2);
+    res.send();
+  } catch (error) {
+    console.error("server/tabs/switch: Error:", error);
     res.sendStatus(500);
   }
 });

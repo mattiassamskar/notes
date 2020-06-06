@@ -19,7 +19,8 @@ export const TabNavItem: React.FunctionComponent<{
   isActive: boolean;
   saveTab: (tab: NotesTab) => void;
   removeTab: (tabId: string) => void;
-}> = ({ id, index, title, isActive, saveTab, removeTab }) => {
+  moveLeft: () => void;
+}> = ({ id, index, title, isActive, saveTab, removeTab, moveLeft }) => {
   const [showToolbar, setShowToolbar] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -68,6 +69,7 @@ export const TabNavItem: React.FunctionComponent<{
               icon={faArrowLeft}
               onClick={(event) => {
                 event.stopPropagation();
+                moveLeft();
               }}
             />
             <FontAwesomeIcon

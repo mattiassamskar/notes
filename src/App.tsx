@@ -18,6 +18,7 @@ import {
   getNextIndex,
   getNextColumn,
   getPreviousColumn,
+  getPreviousTab,
 } from "./App.utils";
 import { TabNavItem } from "./TabNavItem";
 
@@ -60,6 +61,7 @@ function App() {
 
   const getTabs = async () => {
     const dbTabs = await api.fetchTabs();
+    dbTabs.sort((a, b) => a.index - b.index);
     setTabs(dbTabs);
   };
 
@@ -122,6 +124,14 @@ function App() {
     await getTabs();
   };
 
+  const moveTabLeft = async (tab: NotesTab) => {
+    const previousTab = getPreviousTab(tabs, tab);
+    if (!previousTab) return;
+
+    await api.switchTabOrder(tab.id, previousTab.id);
+    await getTabs();
+  };
+
   if (tabs.length === 0) return <div>Loading..</div>;
 
   return (
@@ -141,6 +151,7 @@ function App() {
               isActive={activeTab === tab.id}
               saveTab={saveTab}
               removeTab={removeTab}
+              moveLeft={() => moveTabLeft(tab)}
             />
           ))}
           <Nav.Item key={"999"}>

@@ -4,7 +4,14 @@ import { NoteData } from "./types";
 describe("getPreviousNote", () => {
   describe("when previous note exists", () => {
     it("returns note", () => {
-      const note = { id: "", title: "", text: "", column: 1, index: 5 };
+      const note = {
+        id: "",
+        title: "",
+        text: "",
+        column: 1,
+        index: 5,
+        tabId: "",
+      };
 
       const notes: NoteData[] = [
         note,
@@ -14,6 +21,7 @@ describe("getPreviousNote", () => {
           text: "",
           column: 1,
           index: 1,
+          tabId: "",
         },
         {
           id: "",
@@ -21,6 +29,7 @@ describe("getPreviousNote", () => {
           text: "",
           column: 1,
           index: 3,
+          tabId: "",
         },
         {
           id: "",
@@ -28,6 +37,7 @@ describe("getPreviousNote", () => {
           text: "",
           column: 1,
           index: 7,
+          tabId: "",
         },
         {
           id: "",
@@ -35,6 +45,7 @@ describe("getPreviousNote", () => {
           text: "",
           column: 2,
           index: 4,
+          tabId: "",
         },
       ];
 

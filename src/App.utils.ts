@@ -1,4 +1,4 @@
-import { NoteData } from "./types";
+import { NoteData, NotesTab } from "./types";
 
 export const getPreviousNote = (notes: NoteData[], note: NoteData) => {
   if (notes.length < 2) return null;
@@ -9,6 +9,17 @@ export const getPreviousNote = (notes: NoteData[], note: NoteData) => {
       curr.index > prev.index && curr.index < note.index ? curr : prev
     );
   return previousNote.index < note.index ? previousNote : null;
+};
+
+export const getPreviousTab = (tabs: NotesTab[], tab: NotesTab) => {
+  if (tabs.length < 2) return null;
+
+  const previousTab = tabs
+    .filter((t) => t.index !== tab.index)
+    .reduce((prev, curr) =>
+      curr.index > prev.index && curr.index < tab.index ? curr : prev
+    );
+  return previousTab.index < tab.index ? previousTab : null;
 };
 
 export const getNotesForColumn = (

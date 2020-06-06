@@ -70,3 +70,17 @@ const updateTab = async ({ id, title, index }) => {
     .collection("tabs")
     .findOneAndUpdate({ id }, { $set: { title, index } });
 };
+
+exports.switchTabOrder = async (id1, id2) => {
+  const tab1 = await this.getTab(id1);
+  const tab2 = await this.getTab(id2);
+
+  if (!tab1 || !tab2) return;
+
+  const index = tab1.index;
+  tab1.index = tab2.index;
+  tab2.index = index;
+
+  await updateTab(tab1);
+  await updateTab(tab2);
+};

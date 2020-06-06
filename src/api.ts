@@ -28,6 +28,16 @@ const switchNoteOrder = async (id1: string, id2: string) =>
     body: JSON.stringify({ id1, id2 }),
   });
 
+const switchTabOrder = async (id1: string, id2: string) =>
+  await fetch("tabs/switch", {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({ id1, id2 }),
+  });
+
 const updateNotePosition = async (
   note: NoteData,
   column: number,
@@ -63,4 +73,5 @@ export const api = {
   fetchTabs,
   saveTab,
   removeTab,
+  switchTabOrder,
 };
