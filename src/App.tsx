@@ -168,7 +168,7 @@ function App() {
             animation="border"
             variant="secondary"
             size="sm"
-            className="float-right mt-2"
+            style={{ position: "fixed", right: "5px", zIndex: 999, top: "5px" }}
           />
         )}
         <Nav variant="tabs">

@@ -35,7 +35,7 @@ export const Note = ({
   );
 
   return (
-    <Card className="mt-4 ml-2 mr-4">
+    <Card className="mt-4">
       <NoteTitle
         title={title}
         setTitle={setTitle}
