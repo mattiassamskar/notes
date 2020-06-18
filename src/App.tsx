@@ -9,6 +9,7 @@ import Col from "react-bootstrap/Col";
 import Tab from "react-bootstrap/Tab";
 import Nav from "react-bootstrap/Nav";
 import Spinner from "react-bootstrap/Spinner";
+import Alert from "react-bootstrap/Alert";
 import { guid } from "./utils";
 import { NotesTab, NoteData } from "./types";
 import { Note } from "./Note";
@@ -29,65 +30,76 @@ function App() {
   const [columns] = useState([1, 2]);
   const [notes, setNotes] = useState([] as NoteData[]);
   const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetch = async () => {
-      await getTabs();
-      await getNotes();
-    };
+    const fetch = async () =>
+      await withErrorHandler(async () => {
+        await getTabs();
+        await getNotes();
+      }, "Could not get data!");
     fetch();
   }, []);
 
-  useEffect(() => {
-    if (tabs.length > 0) {
-      const activeTab = window.localStorage.getItem("activeTab") || tabs[0].id;
-      setActiveTab(activeTab);
+  const withErrorHandler = async (
+    func: () => Promise<any>,
+    errorMessage: string
+  ): Promise<any> => {
+    try {
+      setIsSaving(true);
+      setError("");
+      await func();
+    } catch {
+      setError(errorMessage);
+    } finally {
+      setIsSaving(false);
     }
-  }, [tabs]);
-
-  useEffect(() => {
-    window.localStorage.setItem("activeTab", activeTab);
-  }, [activeTab]);
+  };
 
   const getNotes = async () => {
-    setIsSaving(true);
     const dbNotes = await api.fetchNotes();
     setNotes(dbNotes);
-    setIsSaving(false);
-  };
-
-  const saveNote = async (note: NoteData) => {
-    setIsSaving(true);
-    await api.saveNote(note);
-    setIsSaving(false);
-  };
-
-  const removeNote = async (id: string) => {
-    setIsSaving(true);
-    await api.removeNote({ id });
-    await getNotes();
-    setIsSaving(false);
   };
 
   const getTabs = async () => {
-    setIsSaving(true);
     const dbTabs = await api.fetchTabs();
     dbTabs.sort((a, b) => a.index - b.index);
     setTabs(dbTabs);
-    setIsSaving(false);
   };
 
-  const saveTab = async (tab: NotesTab) => {
-    await api.saveTab(tab);
-    await getTabs();
-  };
+  const saveNote = async (note: NoteData) =>
+    await withErrorHandler(async () => {
+      await api.saveNote(note);
+      await getNotes();
+    }, "Could not save note!");
 
-  const removeTab = async (id: string) => {
-    setIsSaving(true);
-    await api.removeTab({ id });
-    await getTabs();
-    setIsSaving(false);
-  };
+  const removeNote = async (id: string) =>
+    await withErrorHandler(async () => {
+      await api.removeNote({ id });
+      await getNotes();
+    }, "Could not remove note!");
+
+  const addTab = async () =>
+    await withErrorHandler(async () => {
+      await api.saveTab({
+        id: guid(),
+        title: "New tab",
+        index: tabs.length + 1,
+      });
+      await getTabs();
+    }, "Could not add tab!");
+
+  const saveTab = async (tab: NotesTab) =>
+    await withErrorHandler(async () => {
+      await api.saveTab(tab);
+      await getTabs();
+    }, "Could not save tab!");
+
+  const removeTab = async (id: string) =>
+    await withErrorHandler(async () => {
+      await api.removeTab({ id });
+      await getTabs();
+    }, "Could not save tab!");
 
   const addNote = (tabId: string, column: number) => {
     setNotes([
@@ -103,61 +115,51 @@ function App() {
     ]);
   };
 
-  const moveUp = async (note: NoteData) => {
-    const previousNote = getPreviousNote(notes, note);
-    if (!previousNote) return;
+  const moveUp = async (note: NoteData) =>
+    await withErrorHandler(async () => {
+      const previousNote = getPreviousNote(notes, note);
+      if (!previousNote) return;
 
-    await api.switchNoteOrder(note.id, previousNote.id);
-    await getNotes();
-  };
+      await api.switchNoteOrder(note.id, previousNote.id);
+      await getNotes();
+    }, "Could not move note!");
 
-  const moveRight = async (note: NoteData) => {
-    setIsSaving(true);
-    const column = getNextColumn(note);
-    if (!column) return;
+  const moveRight = async (note: NoteData) =>
+    await withErrorHandler(async () => {
+      const column = getNextColumn(note);
+      if (!column) return;
 
-    const index = getNextIndex(notes, note.tabId, column);
-    await api.updateNotePosition(note, column, index);
-    await getNotes();
-    setIsSaving(false);
-  };
+      const index = getNextIndex(notes, note.tabId, column);
+      await api.updateNotePosition(note, column, index);
+      await getNotes();
+    }, "Could not move note!");
 
-  const moveLeft = async (note: NoteData) => {
-    setIsSaving(true);
-    const column = getPreviousColumn(note);
-    if (!column) return;
+  const moveLeft = async (note: NoteData) =>
+    await withErrorHandler(async () => {
+      const column = getPreviousColumn(note);
+      if (!column) return;
 
-    const index = getNextIndex(notes, note.tabId, column);
-    await api.updateNotePosition(note, column, index);
-    await getNotes();
-    setIsSaving(false);
-  };
+      const index = getNextIndex(notes, note.tabId, column);
+      await api.updateNotePosition(note, column, index);
+      await getNotes();
+    }, "Could not move note!");
 
-  const addTab = async () => {
-    setIsSaving(true);
-    await api.saveTab({
-      id: guid(),
-      title: "New tab",
-      index: tabs.length + 1,
-    });
-    await getTabs();
-    setIsSaving(false);
-  };
+  const moveTabLeft = async (tab: NotesTab) =>
+    await withErrorHandler(async () => {
+      const previousTab = getPreviousTab(tabs, tab);
+      if (!previousTab) return;
 
-  const moveTabLeft = async (tab: NotesTab) => {
-    setIsSaving(true);
-    const previousTab = getPreviousTab(tabs, tab);
-    if (!previousTab) return;
-
-    await api.switchTabOrder(tab.id, previousTab.id);
-    await getTabs();
-    setIsSaving(false);
-  };
-
-  if (tabs.length === 0) return <div>Loading..</div>;
+      await api.switchTabOrder(tab.id, previousTab.id);
+      await getTabs();
+    }, "Could not move tab!");
 
   return (
     <Container fluid className="mt-1">
+      {!!error && (
+        <Alert variant="danger" dismissible={true} onClose={() => setError("")}>
+          {error}
+        </Alert>
+      )}
       <Tab.Container
         id="tabs"
         activeKey={activeTab}
