@@ -84,3 +84,14 @@ exports.switchTabOrder = async (id1, id2) => {
   await updateTab(tab1);
   await updateTab(tab2);
 };
+
+exports.getUser = async (userName) =>
+  await db.collection("users").findOne({ userName });
+
+exports.saveUser = async ({ userName, password }) => {
+  const user = await this.getUser(userName);
+  if (user) {
+    throw new Error("User " + userName + " already exists");
+  }
+  await db.collection("users").insertOne({ userName, password });
+};

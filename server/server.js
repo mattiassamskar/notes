@@ -2,27 +2,124 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const compression = require("compression");
-const wwwhisper = require("connect-wwwhisper");
+const passport = require("passport");
+const localStrategy = require("passport-local").Strategy;
+const bcrypt = require("bcrypt");
+const JWTstrategy = require("passport-jwt").Strategy;
+const ExtractJWT = require("passport-jwt").ExtractJwt;
+const jwt = require("jsonwebtoken");
 const db = require("./db");
-
 const app = express();
-if (process.env.NODE_ENV === "production") {
-  app.use(wwwhisper());
-}
+
 app.use(compression());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, `/../build`)));
 
-app.get("/notes", async (req, res) => {
-  try {
-    const notes = await db.getNotes();
-    res.send(notes);
-  } catch (error) {
-    console.error("server/notes: Error:", error);
-    res.sendStatus(500);
+passport.use(
+  "signup",
+  new localStrategy(
+    {
+      usernameField: "userName",
+      passwordField: "password",
+    },
+    async (userName, password, done) => {
+      try {
+        const hash = await bcrypt.hash(password, 10);
+        await db.saveUser({ userName, password: hash });
+        const user = await db.getUser(userName);
+        return done(null, user);
+      } catch (error) {
+        done(error);
+      }
+    }
+  )
+);
+
+passport.use(
+  "login",
+  new localStrategy(
+    {
+      usernameField: "userName",
+      passwordField: "password",
+    },
+    async (userName, password, done) => {
+      try {
+        const user = await db.getUser(userName);
+        if (!user) {
+          return done(null, false, { message: "User not found" });
+        }
+        const validate = await bcrypt.compare(password, user.password);
+        if (!validate) {
+          return done(null, false, { message: "Wrong password" });
+        }
+        return done(null, user, { message: "Logged in successfully" });
+      } catch (error) {
+        return done(error);
+      }
+    }
+  )
+);
+
+passport.use(
+  new JWTstrategy(
+    {
+      secretOrKey: process.env.JWTKEY,
+      jwtFromRequest: ExtractJWT.fromUrlQueryParameter("token"),
+    },
+    async (token, done) => {
+      try {
+        return done(null, token.user);
+      } catch (error) {
+        done(error);
+      }
+    }
+  )
+);
+
+app.post(
+  "/signup",
+  passport.authenticate("signup", { session: false }),
+  async (req, res) => {
+    try {
+      res.send();
+    } catch (error) {
+      console.error("server/signup: Error:", error);
+      res.sendStatus(500);
+    }
   }
+);
+
+app.post("/login", async (req, res, next) => {
+  passport.authenticate("login", async (err, user) => {
+    try {
+      if (err || !user) {
+        return next(new Error("An error occurred"));
+      }
+      req.login(user, { session: false }, async (error) => {
+        if (error) return next(error);
+        const token = jwt.sign({ userName: user.userName }, process.env.JWTKEY);
+        return res.json({ token });
+      });
+    } catch (error) {
+      return next(error);
+    }
+  })(req, res, next);
 });
+
+app.get(
+  "/notes",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const notes = await db.getNotes();
+      res.send(notes);
+    } catch (error) {
+      console.error("server/notes: Error:", error);
+      res.sendStatus(500);
+    }
+  }
+);
 
 app.post("/notes", async (req, res) => {
   try {
