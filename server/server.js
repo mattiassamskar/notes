@@ -65,11 +65,11 @@ passport.use(
   new JWTstrategy(
     {
       secretOrKey: process.env.JWTKEY,
-      jwtFromRequest: ExtractJWT.fromUrlQueryParameter("token"),
+      jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
     },
     async (token, done) => {
       try {
-        return done(null, token.user);
+        return done(null, token);
       } catch (error) {
         done(error);
       }
