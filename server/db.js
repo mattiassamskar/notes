@@ -7,8 +7,8 @@ exports.connectToMongoDb = async () => {
   db = client.db();
 };
 
-exports.getNotes = async () => {
-  return await db.collection("notes").find().toArray();
+exports.getNotes = async (userName) => {
+  return await db.collection("notes").find({ userName }).toArray();
 };
 
 exports.removeNote = async (id) => {
@@ -31,14 +31,24 @@ exports.switchNoteOrder = async (id1, id2) => {
   await updateNote(note2);
 };
 
-exports.saveNote = async ({ id, title, text, tabId, column, index }) => {
+exports.saveNote = async (
+  userName,
+  { id, title, text, tabId, column, index }
+) => {
   const note = await this.getNote(id);
   if (note) {
-    return await updateNote({ id, title, text, tabId, column, index });
+    return await updateNote({
+      id,
+      title,
+      text,
+      tabId,
+      column,
+      index,
+    });
   }
   await db
     .collection("notes")
-    .insertOne({ id, title, text, tabId, column, index });
+    .insertOne({ userName, id, title, text, tabId, column, index });
 };
 
 const updateNote = async ({ id, title, text, tabId, column, index }) => {
@@ -47,8 +57,8 @@ const updateNote = async ({ id, title, text, tabId, column, index }) => {
     .findOneAndUpdate({ id }, { $set: { title, text, tabId, column, index } });
 };
 
-exports.getTabs = async () => {
-  return await db.collection("tabs").find().toArray();
+exports.getTabs = async (userName) => {
+  return await db.collection("tabs").find({ userName }).toArray();
 };
 
 exports.removeTab = async (id) => {
@@ -57,12 +67,12 @@ exports.removeTab = async (id) => {
 
 exports.getTab = async (id) => await db.collection("tabs").findOne({ id });
 
-exports.saveTab = async ({ id, title, index }) => {
+exports.saveTab = async (userName, { id, title, index }) => {
   const tab = await this.getTab(id);
   if (tab) {
     return await updateTab({ id, title, index });
   }
-  await db.collection("tabs").insertOne({ id, title, index });
+  await db.collection("tabs").insertOne({ userName, id, title, index });
 };
 
 const updateTab = async ({ id, title, index }) => {
@@ -83,4 +93,15 @@ exports.switchTabOrder = async (id1, id2) => {
 
   await updateTab(tab1);
   await updateTab(tab2);
+};
+
+exports.getUser = async (userName) =>
+  await db.collection("users").findOne({ userName });
+
+exports.saveUser = async ({ userName, password }) => {
+  const user = await this.getUser(userName);
+  if (user) {
+    throw new Error("User " + userName + " already exists");
+  }
+  await db.collection("users").insertOne({ userName, password });
 };
