@@ -3,6 +3,8 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 import { api } from "./api";
 
 interface Props {
@@ -30,6 +32,7 @@ export const Login: FunctionComponent<Props> = (props) => {
     try {
       setError("");
       await api.signup(userName, password);
+      setPassword("");
       setMode("login");
     } catch (error) {
       setError("Could not register");
@@ -40,25 +43,32 @@ export const Login: FunctionComponent<Props> = (props) => {
     return (
       <Form>
         <Form.Group>
+          <Form.Label>Username</Form.Label>
           <Form.Control
-            as="input"
             value={userName}
             onChange={(event) => setUserName(event.target.value)}
           />
         </Form.Group>
         <Form.Group>
+          <Form.Label>Password</Form.Label>
           <Form.Control
-            as="input"
+            type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
         </Form.Group>
         <Form.Group>
-          <Button onClick={login}>Login</Button>
+          <Button variant="primary" onClick={login}>
+            Login
+          </Button>
+          <Button
+            variant="light"
+            className="float-right"
+            onClick={() => setMode("signup")}
+          >
+            Sign up
+          </Button>
         </Form.Group>
-        <span style={{ cursor: "pointer" }} onClick={() => setMode("signup")}>
-          Sign up
-        </span>
       </Form>
     );
   };
@@ -67,21 +77,25 @@ export const Login: FunctionComponent<Props> = (props) => {
     return (
       <Form>
         <Form.Group>
+          <Form.Label>Username</Form.Label>
           <Form.Control
-            as="input"
             value={userName}
             onChange={(event) => setUserName(event.target.value)}
           />
         </Form.Group>
         <Form.Group>
+          <Form.Label>Password</Form.Label>
+
           <Form.Control
-            as="input"
+            type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
         </Form.Group>
         <Form.Group>
-          <Button onClick={signup}>Sign up</Button>
+          <Button variant="primary" onClick={signup}>
+            Sign up
+          </Button>
         </Form.Group>
       </Form>
     );
@@ -94,8 +108,15 @@ export const Login: FunctionComponent<Props> = (props) => {
           {error}
         </Alert>
       )}
-      {mode === "login" && renderLogin()}
-      {mode === "signup" && renderSignup()}
+      <Row>
+        <Col xs={4}></Col>
+        <Col xs={4}>
+          <h1 className="mt-5 mb-3">Notes</h1>
+          {mode === "login" && renderLogin()}
+          {mode === "signup" && renderSignup()}
+        </Col>
+        <Col xs={4}></Col>
+      </Row>
     </Container>
   );
 };
