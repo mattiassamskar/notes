@@ -23,8 +23,15 @@ const saveNote = async (token: string, note: NoteData) =>
     body: JSON.stringify(note),
   });
 
-const removeNote = async ({ id }: { id: string }) =>
-  await fetch("notes/" + id, { method: "DELETE" });
+const removeNote = async (token: string, { id }: { id: string }) =>
+  await fetch("notes/" + id, {
+    method: "DELETE",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      authorization: "Bearer " + token,
+    },
+  });
 
 const switchNoteOrder = async (token: string, id1: string, id2: string) =>
   await fetch("notes/switch", {
@@ -79,8 +86,15 @@ const saveTab = async (token: string, tab: NotesTab) =>
     body: JSON.stringify(tab),
   });
 
-const removeTab = async ({ id }: { id: string }) =>
-  await fetch("tabs/" + id, { method: "DELETE" });
+const removeTab = async (token: string, { id }: { id: string }) =>
+  await fetch("tabs/" + id, {
+    method: "DELETE",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      authorization: "Bearer " + token,
+    },
+  });
 
 const login = async (userName: string, password: string) => {
   const response = await fetch("login", {

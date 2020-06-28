@@ -79,7 +79,7 @@ function App() {
 
   const removeNote = async (id: string) =>
     await withErrorHandler(async () => {
-      await api.removeNote({ id });
+      await api.removeNote(token, { id });
       await getNotes();
     }, "Could not remove note!");
 
@@ -101,7 +101,7 @@ function App() {
 
   const removeTab = async (id: string) =>
     await withErrorHandler(async () => {
-      await api.removeTab({ id });
+      await api.removeTab(token, { id });
       await getTabs();
     }, "Could not save tab!");
 
