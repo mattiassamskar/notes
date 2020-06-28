@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -23,6 +23,7 @@ import {
   getPreviousTab,
 } from "./App.utils";
 import { TabNavItem } from "./TabNavItem";
+import { Login } from "./Login";
 
 function App() {
   const [tabs, setTabs] = useState([] as NotesTab[]);
@@ -31,6 +32,9 @@ function App() {
   const [notes, setNotes] = useState([] as NoteData[]);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
+  const [token, setToken] = useState(
+    window.localStorage.getItem("token") || ""
+  );
 
   useEffect(() => {
     const fetch = async () =>
@@ -39,7 +43,7 @@ function App() {
         await getNotes();
       }, "Could not get data!");
     fetch();
-  }, []);
+  }, [token]);
 
   const withErrorHandler = async (
     func: () => Promise<any>,
@@ -57,19 +61,19 @@ function App() {
   };
 
   const getNotes = async () => {
-    const dbNotes = await api.fetchNotes();
+    const dbNotes = await api.fetchNotes(token);
     setNotes(dbNotes);
   };
 
   const getTabs = async () => {
-    const dbTabs = await api.fetchTabs();
+    const dbTabs = await api.fetchTabs(token);
     dbTabs.sort((a, b) => a.index - b.index);
     setTabs(dbTabs);
   };
 
   const saveNote = async (note: NoteData) =>
     await withErrorHandler(async () => {
-      await api.saveNote(note);
+      await api.saveNote(token, note);
       await getNotes();
     }, "Could not save note!");
 
@@ -81,7 +85,7 @@ function App() {
 
   const addTab = async () =>
     await withErrorHandler(async () => {
-      await api.saveTab({
+      await api.saveTab(token, {
         id: guid(),
         title: "New tab",
         index: tabs.length + 1,
@@ -91,7 +95,7 @@ function App() {
 
   const saveTab = async (tab: NotesTab) =>
     await withErrorHandler(async () => {
-      await api.saveTab(tab);
+      await api.saveTab(token, tab);
       await getTabs();
     }, "Could not save tab!");
 
@@ -120,7 +124,7 @@ function App() {
       const previousNote = getPreviousNote(notes, note);
       if (!previousNote) return;
 
-      await api.switchNoteOrder(note.id, previousNote.id);
+      await api.switchNoteOrder(token, note.id, previousNote.id);
       await getNotes();
     }, "Could not move note!");
 
@@ -130,7 +134,7 @@ function App() {
       if (!column) return;
 
       const index = getNextIndex(notes, note.tabId, column);
-      await api.updateNotePosition(note, column, index);
+      await api.updateNotePosition(token, note, column, index);
       await getNotes();
     }, "Could not move note!");
 
@@ -140,7 +144,7 @@ function App() {
       if (!column) return;
 
       const index = getNextIndex(notes, note.tabId, column);
-      await api.updateNotePosition(note, column, index);
+      await api.updateNotePosition(token, note, column, index);
       await getNotes();
     }, "Could not move note!");
 
@@ -149,9 +153,13 @@ function App() {
       const previousTab = getPreviousTab(tabs, tab);
       if (!previousTab) return;
 
-      await api.switchTabOrder(tab.id, previousTab.id);
+      await api.switchTabOrder(token, tab.id, previousTab.id);
       await getTabs();
     }, "Could not move tab!");
+
+  if (!token) {
+    return <Login setToken={setToken} />;
+  }
 
   return (
     <Container fluid className="mt-1">
@@ -173,6 +181,22 @@ function App() {
             style={{ position: "fixed", right: "5px", zIndex: 999, top: "5px" }}
           />
         )}
+        <div
+          className="fading"
+          style={{ position: "fixed", right: "5px", zIndex: 999, top: "5px" }}
+        >
+          <span className="fading">
+            <FontAwesomeIcon
+              cursor="pointer"
+              color={"black"}
+              icon={faSignOutAlt}
+              onClick={() => {
+                window.localStorage.removeItem("token");
+                setToken("");
+              }}
+            />
+          </span>
+        </div>
         <Nav variant="tabs">
           {tabs.map((tab) => (
             <TabNavItem

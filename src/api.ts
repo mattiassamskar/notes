@@ -1,16 +1,24 @@
 import { NoteData, NotesTab } from "./types";
 
-const fetchNotes = async (): Promise<NoteData[]> => {
-  const respone = await fetch("notes");
+const fetchNotes = async (token: string): Promise<NoteData[]> => {
+  const respone = await fetch("notes", {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      authorization: "Bearer " + token,
+    },
+  });
   return await respone.json();
 };
 
-const saveNote = async (note: NoteData) =>
+const saveNote = async (token: string, note: NoteData) =>
   await fetch("notes", {
     method: "POST",
     headers: {
       accept: "application/json",
       "content-type": "application/json",
+      authorization: "Bearer " + token,
     },
     body: JSON.stringify(note),
   });
@@ -18,51 +26,83 @@ const saveNote = async (note: NoteData) =>
 const removeNote = async ({ id }: { id: string }) =>
   await fetch("notes/" + id, { method: "DELETE" });
 
-const switchNoteOrder = async (id1: string, id2: string) =>
+const switchNoteOrder = async (token: string, id1: string, id2: string) =>
   await fetch("notes/switch", {
     method: "POST",
     headers: {
       accept: "application/json",
       "content-type": "application/json",
+      authorization: "Bearer " + token,
     },
     body: JSON.stringify({ id1, id2 }),
   });
 
-const switchTabOrder = async (id1: string, id2: string) =>
+const switchTabOrder = async (token: string, id1: string, id2: string) =>
   await fetch("tabs/switch", {
     method: "POST",
     headers: {
       accept: "application/json",
       "content-type": "application/json",
+      authorization: "Bearer " + token,
     },
     body: JSON.stringify({ id1, id2 }),
   });
 
 const updateNotePosition = async (
+  token: string,
   note: NoteData,
   column: number,
   index: number
 ) => {
-  await saveNote({ ...note, column, index });
+  await saveNote(token, { ...note, column, index });
 };
 
-const fetchTabs = async (): Promise<NotesTab[]> => {
-  const respone = await fetch("tabs");
+const fetchTabs = async (token: string): Promise<NotesTab[]> => {
+  const respone = await fetch("tabs", {
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      authorization: "Bearer " + token,
+    },
+  });
   return await respone.json();
 };
 
-const saveTab = async (tab: NotesTab) =>
+const saveTab = async (token: string, tab: NotesTab) =>
   await fetch("tabs", {
     method: "POST",
     headers: {
       accept: "application/json",
       "content-type": "application/json",
+      authorization: "Bearer " + token,
     },
     body: JSON.stringify(tab),
   });
 
 const removeTab = async ({ id }: { id: string }) =>
   await fetch("tabs/" + id, { method: "DELETE" });
+
+const login = async (userName: string, password: string) => {
+  const response = await fetch("login", {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/x-www-form-urlencoded",
+    },
+    body: `userName=${userName}&password=${password}`,
+  });
+  return await response.json();
+};
+
+const signup = async (userName: string, password: string) =>
+  await fetch("signup", {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/x-www-form-urlencoded",
+    },
+    body: `userName=${userName}&password=${password}`,
+  });
 
 export const api = {
   fetchNotes,
@@ -74,4 +114,6 @@ export const api = {
   saveTab,
   removeTab,
   switchTabOrder,
+  login,
+  signup,
 };
