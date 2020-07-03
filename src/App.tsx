@@ -176,27 +176,16 @@ function App() {
         {isSaving && (
           <Spinner
             animation="border"
-            variant="secondary"
+            variant="primary"
             size="sm"
-            style={{ position: "fixed", right: "5px", zIndex: 999, top: "5px" }}
+            style={{
+              position: "fixed",
+              right: "50%",
+              zIndex: 999,
+              top: "50%",
+            }}
           />
         )}
-        <div
-          className="fading"
-          style={{ position: "fixed", right: "5px", zIndex: 999, top: "5px" }}
-        >
-          <span className="fading">
-            <FontAwesomeIcon
-              cursor="pointer"
-              color={"black"}
-              icon={faSignOutAlt}
-              onClick={() => {
-                window.localStorage.removeItem("token");
-                setToken("");
-              }}
-            />
-          </span>
-        </div>
         <Nav variant="tabs">
           {tabs.map((tab) => (
             <TabNavItem
@@ -210,21 +199,37 @@ function App() {
               moveLeft={() => moveTabLeft(tab)}
             />
           ))}
+
           <Nav.Item key={"999"}>
             <Nav.Link eventKey={"999"}>
               <div className="fading">
-                <span className="fading">
-                  <FontAwesomeIcon
-                    cursor="pointer"
-                    color={"black"}
-                    icon={faPlus}
-                    onClick={addTab}
-                  />
-                </span>
+                <FontAwesomeIcon
+                  className="fading"
+                  cursor="pointer"
+                  color={"black"}
+                  icon={faPlus}
+                  onClick={addTab}
+                />
               </div>
             </Nav.Link>
           </Nav.Item>
+          <div
+            className="fading"
+            style={{ position: "absolute", top: 13, right: 15 }}
+          >
+            <FontAwesomeIcon
+              className="fading"
+              cursor="pointer"
+              color={"black"}
+              icon={faSignOutAlt}
+              onClick={() => {
+                window.localStorage.removeItem("token");
+                setToken("");
+              }}
+            />
+          </div>
         </Nav>
+
         <Tab.Content>
           {tabs.map((tab) => (
             <Tab.Pane key={tab.id} eventKey={tab.id}>
