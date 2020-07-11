@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTrash,
@@ -10,21 +10,20 @@ import Nav from "react-bootstrap/Nav";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { NotesTab } from "./types";
+import { TabContext } from "./TabContext";
 
 export const TabNavItem: React.FunctionComponent<{
   id: string;
   index: number;
   title: string;
   isActive: boolean;
-  saveTab: (tab: NotesTab) => void;
-  removeTab: (tabId: string) => void;
-  moveLeft: () => void;
-}> = ({ id, index, title, isActive, saveTab, removeTab, moveLeft }) => {
+}> = ({ id, index, title, isActive }) => {
   const [showToolbar, setShowToolbar] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
+
+  const { saveTab, removeTab, moveTabLeft } = useContext(TabContext);
 
   return (
     <Nav.Item key={id} onBlur={() => setShowToolbar(false)}>
@@ -69,7 +68,7 @@ export const TabNavItem: React.FunctionComponent<{
               icon={faArrowLeft}
               onClick={(event) => {
                 event.stopPropagation();
-                moveLeft();
+                moveTabLeft(id);
               }}
             />
             <FontAwesomeIcon

@@ -1,36 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Card from "react-bootstrap/Card";
 import { NoteTitle } from "./NoteTitle";
 import { NoteText } from "./NoteText";
 import { NoteData } from "./types";
 import { NoteHeader } from "./NoteHeader";
+import { NoteContext } from "./NoteContext";
 
-export const Note = ({
-  note,
-  save,
-  remove,
-  moveUp,
-  moveRight,
-  moveLeft,
-}: {
-  note: NoteData;
-  save: (note: NoteData) => void;
-  remove: (id: string) => void;
-  moveUp: (index: number) => void;
-  moveRight: (note: NoteData) => void;
-  moveLeft: (note: NoteData) => void;
-}) => {
+export const Note = ({ note }: { note: NoteData }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(note.title);
   const [text, setText] = useState(note.text);
 
+  const {
+    removeNote,
+    saveNote,
+    moveNoteLeft,
+    moveNoteRight,
+    moveNoteUp,
+  } = useContext(NoteContext);
+
   const header = (
     <NoteHeader
       enableTextEdit={() => setIsEditing(true)}
-      removeNote={() => remove(note.id)}
-      moveUp={() => moveUp(note.index)}
-      moveRight={() => moveRight({ ...note, title, text })}
-      moveLeft={() => moveLeft({ ...note, title, text })}
+      removeNote={() => removeNote(note.id)}
+      moveUp={() => moveNoteUp(note)}
+      moveRight={() => moveNoteRight({ ...note, title, text })}
+      moveLeft={() => moveNoteLeft({ ...note, title, text })}
     />
   );
 
@@ -41,7 +36,7 @@ export const Note = ({
         setTitle={setTitle}
         header={header}
         onBlur={() => {
-          save({
+          saveNote({
             ...note,
             title,
             text,
@@ -54,7 +49,7 @@ export const Note = ({
         isEditing={isEditing}
         onBlur={() => {
           setIsEditing(false);
-          save({
+          saveNote({
             ...note,
             title,
             text,
