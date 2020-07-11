@@ -16,14 +16,13 @@ import { TabNavItem } from "./TabNavItem";
 import { Login } from "./Login";
 import { TabContext } from "./TabContext";
 import { NoteContext } from "./NoteContext";
+import { AuthContext } from "./AuthContext";
 
 function App() {
   const [activeTab, setActiveTab] = useState("");
   const [columns] = useState([1, 2]);
-  const [token, setToken] = useState(
-    window.localStorage.getItem("token") || ""
-  );
 
+  const { authState, clearToken } = useContext(AuthContext);
   const { tabs, getTabs, addTab, tabsState } = useContext(TabContext);
   const { notes, getNotes, addNote, notesState } = useContext(NoteContext);
 
@@ -32,11 +31,13 @@ function App() {
       await getTabs();
       await getNotes();
     };
-    fetch();
-  }, [getTabs, getNotes, token]);
+    if (authState === "loggedIn") {
+      fetch();
+    }
+  }, [getTabs, getNotes, authState]);
 
-  if (!token) {
-    return <Login setToken={setToken} />;
+  if (authState === "loggedOut") {
+    return <Login />;
   }
 
   return (
@@ -83,10 +84,7 @@ function App() {
               cursor="pointer"
               color={"black"}
               icon={faSignOutAlt}
-              onClick={() => {
-                window.localStorage.removeItem("token");
-                setToken("");
-              }}
+              onClick={clearToken}
             />
           </div>
         </Nav>

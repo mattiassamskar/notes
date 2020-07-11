@@ -1,4 +1,4 @@
-import React, { createContext, useState, useCallback } from "react";
+import React, { createContext, useState, useCallback, useContext } from "react";
 import { NoteData } from "./types";
 import { api } from "./api";
 import { guid } from "./utils";
@@ -8,10 +8,11 @@ import {
   getPreviousColumn,
   getNextColumn,
 } from "./App.utils";
+import { AuthContext } from "./AuthContext";
 
 type NotesState = "initial" | "loading" | "finished" | "error";
 
-interface NoteContextInteface {
+interface NoteContextInterface {
   notes: NoteData[];
   notesState: NotesState;
   getNotes: () => Promise<void>;
@@ -23,7 +24,7 @@ interface NoteContextInteface {
   moveNoteRight: (note: NoteData) => void;
 }
 
-export const NoteContext = createContext<NoteContextInteface>({
+export const NoteContext = createContext<NoteContextInterface>({
   notes: [],
   notesState: "initial",
   getNotes: () => Promise.resolve(),
@@ -38,8 +39,7 @@ export const NoteContext = createContext<NoteContextInteface>({
 export const NoteProvider = ({ children }: any) => {
   const [notes, setNotes] = useState([] as NoteData[]);
   const [notesState, setNotesState] = useState<NotesState>("initial");
-
-  const token = window.localStorage.getItem("token") || "";
+  const { token } = useContext(AuthContext);
 
   const withErrorHandler = async (func: () => Promise<any>): Promise<any> => {
     try {

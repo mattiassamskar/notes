@@ -1,12 +1,13 @@
-import React, { createContext, useState, useCallback } from "react";
+import React, { createContext, useState, useCallback, useContext } from "react";
 import { NotesTab } from "./types";
 import { api } from "./api";
 import { guid } from "./utils";
 import { getPreviousTab } from "./App.utils";
+import { AuthContext } from "./AuthContext";
 
 type TabsState = "initial" | "loading" | "finished" | "error";
 
-interface TabContextInteface {
+interface TabContextInterface {
   tabs: NotesTab[];
   tabsState: TabsState;
   getTabs: () => Promise<void>;
@@ -16,7 +17,7 @@ interface TabContextInteface {
   moveTabLeft: (id: string) => void;
 }
 
-export const TabContext = createContext<TabContextInteface>({
+export const TabContext = createContext<TabContextInterface>({
   tabs: [],
   tabsState: "initial",
   getTabs: () => Promise.resolve(),
@@ -29,8 +30,7 @@ export const TabContext = createContext<TabContextInteface>({
 export const TabProvider = ({ children }: any) => {
   const [tabs, setTabs] = useState([] as NotesTab[]);
   const [tabsState, setTabsState] = useState<TabsState>("initial");
-
-  const token = window.localStorage.getItem("token") || "";
+  const { token } = useContext(AuthContext);
 
   const withErrorHandler = async (func: () => Promise<any>): Promise<any> => {
     try {

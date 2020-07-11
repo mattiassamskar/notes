@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useState, useContext } from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -6,23 +6,21 @@ import Alert from "react-bootstrap/Alert";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { api } from "./api";
+import { AuthContext } from "./AuthContext";
 
-interface Props {
-  setToken: (token: string) => void;
-}
-
-export const Login: FunctionComponent<Props> = (props) => {
+export const Login: FunctionComponent = () => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [mode, setMode] = useState<"login" | "signup">("login");
 
+  const { saveToken } = useContext(AuthContext);
+
   const login = async () => {
     try {
       setError("");
       const response = await api.login(userName, password);
-      window.localStorage.setItem("token", response.token);
-      props.setToken(response.token);
+      saveToken(response.token);
     } catch (error) {
       setError("Could not login");
     }
