@@ -19,7 +19,7 @@ jobs:
           yarn install
 
       - name: Build react app
-        run: |
+      - run: |
           cd client
           yarn install
           yarn build
