@@ -1,7 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy Node.js app to Azure Web App - notes-app
+name: Build and deploy Node.js app to Azure Web App
 
 on:
   push:
@@ -14,21 +11,23 @@ jobs:
 
     steps:
       - uses: actions/checkout@master
-
-      - name: Set up Node.js version
-        uses: actions/setup-node@v1
+      - name: Install node.js
+      - uses: actions/setup-node@v2
         with:
           node-version: "12.13.0"
-
-      - name: install, build, and test
         run: |
+          yarn install
+
+      - name: Build react app
+        run: |
+          cd client
           yarn install
           yarn build
 
-      - name: "Deploy to Azure Web App"
-        uses: azure/webapps-deploy@v2
+      - name: Deploy to Azure
+      - uses: azure/webapps-deploy@v2
         with:
-          app-name: "notes-app"
+          app-name: "Notes"
           slot-name: "production"
           publish-profile: ${{ secrets.AzureAppService_PublishProfile_d2834666476d426696930c23018505ff }}
           package: .
