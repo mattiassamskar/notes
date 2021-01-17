@@ -17,13 +17,9 @@ jobs:
           node-version: "12.13.0"
       - run: |
           yarn install
-
-      - name: Build react app
-      - run: |
           cd client
           yarn install
           yarn build
-
       - name: Deploy to Azure
       - uses: azure/webapps-deploy@v2
         with:
