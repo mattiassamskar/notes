@@ -19,7 +19,7 @@ import { NoteContext } from "./NoteContext";
 import { AuthContext } from "./AuthContext";
 
 function App() {
-  const [activeTab, setActiveTab] = useState("");
+  const [activeTab, setActiveTab] = useState<string | null>("");
   const [columns] = useState([1, 2]);
 
   const { authState, clearToken } = useContext(AuthContext);
@@ -49,7 +49,7 @@ function App() {
       )}
       <Tab.Container
         id="tabs"
-        activeKey={activeTab}
+        activeKey={activeTab || undefined}
         onSelect={(tabId: string | null) => tabId && setActiveTab(tabId)}
       >
         <Nav variant="tabs">
