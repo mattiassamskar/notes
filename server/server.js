@@ -14,7 +14,10 @@ const app = express();
 app.use(compression());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use('/', express.static('/home/site/wwwroot', { index: "index.html" }));
+app.use(
+  "/",
+  express.static("/home/site/wwwroot/build", { index: "index.html" })
+);
 
 passport.use(
   "signup",
