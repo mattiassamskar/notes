@@ -49,8 +49,8 @@ function App() {
       )}
       <Tab.Container
         id="tabs"
-        activeKey={activeTab}
-        onSelect={(tabId) => setActiveTab(tabId)}
+        activeKey={activeTab || undefined}
+        onSelect={(tabId: string | null) => tabId && setActiveTab(tabId)}
       >
         <Nav variant="tabs">
           {tabs.map((tab) => (
