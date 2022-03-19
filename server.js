@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(
   "/",
-  express.static("/home/site/wwwroot/build", { index: "index.html" })
+  express.static("/", { index: "index.html" })
 );
 
 passport.use(
