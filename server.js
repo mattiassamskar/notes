@@ -14,10 +14,7 @@ const app = express();
 app.use(compression());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(
-  "/",
-  express.static("/", { index: "index.html" })
-);
+app.use("/", express.static("./build", { index: "index.html" }));
 
 passport.use(
   "signup",
@@ -269,7 +266,7 @@ app.post(
 
 try {
   db.connectToMongoDb();
-  const PORT = process.env.PORT || 5000;
+  const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => console.log(`Running on port ${PORT}`));
 } catch (error) {
   console.error(error);
