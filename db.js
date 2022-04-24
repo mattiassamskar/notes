@@ -4,7 +4,7 @@ var db;
 
 exports.connectToMongoDb = async () => {
   const client = await MongoClient.connect(process.env.MONGODB_URI);
-  db = client.db();
+  db = client.db("Notes");
 };
 
 exports.getNotes = async (userName) => {
