@@ -49,7 +49,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
         with:
-          app-name: "notes-mattias"
+          app-name: "mattias-notes-app"
           slot-name: "Production"
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C5751C67DCEA4862B452046C391494A0 }}
           package: .
