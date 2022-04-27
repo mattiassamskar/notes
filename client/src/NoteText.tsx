@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import ReactMarkdown from "react-markdown/with-html";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
 
@@ -42,9 +43,9 @@ export const NoteText = ({
         </Form>
       ) : (
         <ReactMarkdown
-          source={text}
+          children={text}
+          rehypePlugins={[rehypeRaw]}
           linkTarget={() => "_blank"}
-          escapeHtml={false}
         />
       )}
     </Card.Body>

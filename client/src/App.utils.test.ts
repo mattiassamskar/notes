@@ -55,7 +55,14 @@ describe("getPreviousNote", () => {
 
   describe("when only one note in list", () => {
     it("returns null", () => {
-      const note = { id: "", title: "", text: "", column: 1, index: 3 };
+      const note = {
+        id: "",
+        tabId: "",
+        title: "",
+        text: "",
+        column: 1,
+        index: 3,
+      };
 
       expect(getPreviousNote([note], note)).toEqual(null);
     });
@@ -63,12 +70,20 @@ describe("getPreviousNote", () => {
 
   describe("when note is first in list", () => {
     it("returns null", () => {
-      const note = { id: "", title: "", text: "", column: 1, index: 3 };
+      const note = {
+        id: "",
+        tabId: "",
+        title: "",
+        text: "",
+        column: 1,
+        index: 3,
+      };
 
       const notes: NoteData[] = [
         note,
         {
           id: "",
+          tabId: "",
           title: "",
           text: "",
           column: 1,
